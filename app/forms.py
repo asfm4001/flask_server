@@ -1,0 +1,39 @@
+from flask_wtf import FlaskForm
+from wtforms import (
+    StringField,    
+    PasswordField,
+    BooleanField,
+    SubmitField
+)
+from wtforms.validators import (
+    DataRequired,   # 資料檢查
+    Length, # 長度限制  
+    Email,
+    EqualTo,
+    ValidationError # 偵測相同的username, email
+)
+
+# 協助validate_username() 引入User
+from models import User
+
+class RegisterForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=8, max=20)])
+    # 需安裝email_validator
+    # email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=20)])
+    confirm = PasswordField("Repeat Password", validators=[DataRequired(), EqualTo("password")])
+    submit = SubmitField("Register")
+
+    # 檢查username 是否存在DB中
+    # 若email也是unique, 需再定義validate_email()
+    def validate_username(self, username):  # username 必須與RegisterForm中的變數名相同
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError("Username already  token")
+
+# 與Register類似
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=8, max=20)])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=20)])
+    remember = BooleanField("Remember")
+    submit = SubmitField("Login")

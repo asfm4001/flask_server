@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        {% include "bootstrap/base.html" %}
+        {% if title %}
+            <title>{{ title }}</title>
+        {% else %}
+            <title>Flasl App</title>
+        {% endif %}
+    </head>
+    <body>
+        {% block navbar %}
+            {% include "navbar.html" %}
+        {% endblock %}
+        
+        {% block content %}
+            <div class="container">
+                {% block app_content %}
+                {% endblock app_content%}
+            </div>
+        {% endblock %}
+    </body>
+</html>

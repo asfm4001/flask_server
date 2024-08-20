@@ -11,8 +11,8 @@ def index():
 @app.route("/register", methods=["GET","POST"])
 def register():
     # 判斷當前client是否為登入狀態
-    # if current_user.is_authenticated:
-    #     return redirect(url_for("hello"))
+    if current_user.is_authenticated:
+        return redirect(url_for("hello"))
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -25,51 +25,53 @@ def register():
         db.session.commit()
 
         # 使用flash 返回結果至register.html
+        # flash後馬上轉到"login"，導致看不到!!!
         flash("Congrats, registration success!", category="success")
         
         # 返回index
         # 不可使用time.sleep
         # return redirect(url_for("index"))
-        # return redirect(url_for("login"))
+        return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
-# @app.route("/login", methods=["GET","POST"])
-# def login():
+@app.route("/login", methods=["GET","POST"])
+def login():
 #     # 判斷當前client是否為登入狀態
-#     if current_user.is_authenticated:
-#         return redirect(url_for("hello"))
+    if current_user.is_authenticated:
+        return redirect(url_for("hello"))
     
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         username = form.username.data
-#         password = form.password.data
-#         remember = form.remember.data
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        remember = form.remember.data
 
-#         # 確認user's pw 是否與 hash相同
-#         user = User.query.filter_by(username=username).first()
-#         if user and bcrypt.check_password_hash(user.password, password):
-#             # user exists and password matched
-#             login_user(user, remember=remember)
-#             flash("Login success", category="info")
+        # 確認user's pw 是否與 hash相同
+        user = User.query.filter_by(username=username).first()
+        if user and bcrypt.check_password_hash(user.password, password):
+            # user exists and password matched
+            login_user(user, remember=remember)
+            # 顯示在register中，看不到!!!
+            flash("Login success", category="info")
 
-#             # 若url中存在變數"next"
-#             # if request.args.get("next"):
-#             #     next_page = request.args.get("next")
-#             #     return redirect(url_for(next_page))
-#             return redirect(url_for("hello", username = user.username))
+            # 若url中存在變數"next"
+            if request.args.get("next"):
+                next_page = request.args.get("next")
+                return redirect(url_for(next_page))
+            return redirect(url_for("hello", username = user.username))
 
-#         flash("User not exists or password not match", category="danger")
-#     return render_template("login.html", form=form)
+        flash("User not exists or password not match", category="danger")
+    return render_template("login.html", form=form)
 
-# @app.route("/logout")
-# def logout():
-#     logout_user()
-#     return redirect(url_for("login"))
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 @app.route("/hello")
-# @login_required
+@login_required
 def hello():
-    # if request.args.get("next"):
-    #     next_page = request.args.get("next")
-    #     return redirect(url_for(next_page))
+    if request.args.get("next"):
+        next_page = request.args.get("next")
+        return redirect(url_for(next_page))
     return render_template("hello.html", title="MC")

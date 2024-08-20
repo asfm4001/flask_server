@@ -5,12 +5,12 @@
 #  -> /Users/muchian/Documents/learnPython/learnFlask/ex6
 # pjdir = os.path.abspath(os.path.dirname(__file__))
 
-from app import db#, login
+from app import db, login
 
 
-# @login.user_loader
-# def load_user(user_id):
-#     return User.query.filter_by(id=user_id).first()
+@login.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id).first()
 
 from flask_login import UserMixin
 class User(db.Model, UserMixin):

@@ -16,11 +16,12 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
+        email = form.email.data
 
         # 生成hash 
         password = bcrypt.generate_password_hash(form.password.data)
         # print(username, password)
-        user = User(username=username, password=password)
+        user = User(username=username, password=password, email=email)
         db.session.add(user)
         db.session.commit()
 

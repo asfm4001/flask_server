@@ -1,6 +1,6 @@
 from app import app, bcrypt, db
 from flask import render_template, flash, redirect, url_for, request
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, PasswordResetRequestForm
 from models import User
 from flask_login import login_user, login_required, current_user, logout_user
 
@@ -65,6 +65,7 @@ def login():
     return render_template("login.html", form=form)
 
 @app.route("/logout")
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
@@ -76,3 +77,9 @@ def hello():
         next_page = request.args.get("next")
         return redirect(url_for(next_page))
     return render_template("hello.html", title="MC")
+
+# 引入forms.py的PasswordResetRequestForm
+@app.route("/send_password_reset_request", methods=["GET", "POST"])
+def send_password_reset_request():
+    form = PasswordResetRequestForm()
+    return render_template("send_password_reset_request.html", form=form)

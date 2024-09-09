@@ -1,6 +1,8 @@
-#
-/app/instance
-/app/__pycache__
+# 忽略環境變數(env), 內含帳號密碼
+.env
 
-#
-config.py
+# 忽略資料庫
+/app/instance
+
+# 忽略執行檔
+/app/__pycache__

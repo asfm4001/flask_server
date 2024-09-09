@@ -8,6 +8,8 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
+    SECRET_KEY = 'dev'    # 給form使用
+
     # Flask Gamil Config
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465

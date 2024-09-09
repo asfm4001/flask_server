@@ -2,7 +2,13 @@
 .env
 
 # 忽略資料庫
-/app/instance
+/instance
 
 # 忽略執行檔
+/__pycache__
 /app/__pycache__
+*.pyc
+
+# 忽略虛擬環境, vscode
+.venv
+.vscode

@@ -53,3 +53,9 @@ class PasswordResetRequestForm(FlaskForm):
         # 假若輸入email不存在
         if not email:
             raise ValidationError("Email not exists.")
+
+# user重設password表格      
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=20)])
+    confirm = PasswordField("Repeat Password", validators=[DataRequired(), EqualTo("password")])
+    submit = SubmitField("Reset Password")

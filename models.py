@@ -27,6 +27,9 @@ class User(db.Model, UserMixin):
     def generate_reset_password_token(self):
         # secret_key 使用config設定的SERCET_KEY
         return  jwt.encode({"id": self.id}, current_app.config["SECRET_KEY"], algorithm="HS256")
+    
+    # 原方法為class, 需傳入object將其實體化
+    # @staticmethod可使方法直接實體化(無需傳入self) -> 美觀
     @staticmethod
     def check_reset_password_token(token):
         # 若token對映user存在, 返回user

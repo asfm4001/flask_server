@@ -20,6 +20,11 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(20), nullable=False)
+
+    # 設定 與Post關聯
+    # relationship(tableName, 反向關聯)
+        # bacjref(反向關聯變數名稱, 單向關聯) e.g. user無post則不創建post table
+    posts = db.relationship("Post", backref=db.backref("author", lazy=True))
     
 
     def __repr__(self):
@@ -39,4 +44,14 @@ class User(db.Model, UserMixin):
             return User.query.filter_by(id=data["id"]).first()
         except:
             return
-    
+
+from datetime import datetime
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(140), nullable=False)
+    timestramp = db.Column(db.DateTime, default=datetime.utcnow())
+    # 設定foreign key, 與User中的id關聯(table name預設為class name)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    def __repr__(self):
+        return '<Post {}>'.format(self.body)

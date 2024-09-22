@@ -1,13 +1,22 @@
 from flask import render_template, flash, redirect, url_for, request
-from forms import RegisterForm, LoginForm, PasswordResetRequestForm, ResetPasswordForm
-from models import User
+from forms import RegisterForm, LoginForm, PasswordResetRequestForm, ResetPasswordForm, PostTweetForm
+from models import User, Post
 from flask_login import login_user, login_required, current_user, logout_user
 from app import app, bcrypt, db
 from app.email import send_reset_password_mail
 
-@app.route("/")
+@app.route("/", methods=["GET","POST"])
+@login_required
 def index():
-    return render_template("index.html", title="MC")
+    form = PostTweetForm()
+    if form.validate_on_submit():
+        body = form.text.data
+        post = Post(body=body)  # body僅接收str型態
+        current_user.posts.append(post)
+        db.session.commit()
+        flash("You have post a new tweet.", category="success")
+
+    return render_template("index.html", title="MC", form=form)
 
 @app.route("/register", methods=["GET","POST"])
 def register():
@@ -53,13 +62,11 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password):
             # user exists and password matched
             login_user(user, remember=remember)
-            # 顯示在register中，看不到!!!
-            flash("Login success", category="info")
 
             # 若url中存在變數"next"
-            if request.args.get("next"):
-                next_page = request.args.get("next")
-                return redirect(url_for(next_page))
+            # if request.args.get("next"):
+            #     next_page = request.args.get("next")
+            #     return redirect(url_for(next_page))
             return redirect(url_for("hello", username = user.username))
 
         flash("User not exists or password not match", category="danger")

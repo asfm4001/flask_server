@@ -3,7 +3,8 @@ from wtforms import (
     StringField,    
     PasswordField,
     BooleanField,
-    SubmitField
+    SubmitField,
+    TextAreaField
 )
 from wtforms.validators import (
     DataRequired,   # 資料檢查
@@ -59,3 +60,8 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=20)])
     confirm = PasswordField("Repeat Password", validators=[DataRequired(), EqualTo("password")])
     submit = SubmitField("Reset Password")
+
+# uesr post表格
+class PostTweetForm(FlaskForm):
+    text = TextAreaField("Say something...", validators=[DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField("Post Text")

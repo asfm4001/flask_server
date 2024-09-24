@@ -7,6 +7,33 @@
     <div class="col-md-6">
         {% import "bootstrap/wtf.html" as wtf %}
         {{ wtf.quick_form(form) }}
+        <hr>
+    </div>
+    <div class="col-md-3 col-md-offset-2">
+        <div class="thumbnail text-center">
+          <img src="{{ current_user.avatar_img }}" alt="avatar" width="100px">
+          <div class="caption">
+            <h4>{{ current_user.username }}</h4>
+            <p>
+                <a href="#" class="btn btn-primary" role="button">followers</a>
+                <a href="#" class="btn btn-default" role="button">followed</a></p>
+          </div>
+        </div>
     </div>
 </div>
+
+{% for post in posts %}
+    <div class="media">
+        <div class="media-left">
+          <a href="#">
+            <img class="media-object" src="{{ post.author.avatar_img }}" alt="avatar", width="64">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{ post.author.username }}</h4>
+          <small class="text-muted">{{ post.timestramp }}</small>
+          <p>{{ post.body }}</p>
+        </div>
+      </div>
+{% endfor %}
 {% endblock %}

@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(20), nullable=False)
+    avatar_img = db.Column(db.String(120), default="/static/asset/default_avatar.png", nullable=False)
 
     # 設定 與Post關聯
     # relationship(tableName, 反向關聯)

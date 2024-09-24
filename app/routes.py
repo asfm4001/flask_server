@@ -15,8 +15,9 @@ def index():
         current_user.posts.append(post)
         db.session.commit()
         flash("You have post a new tweet.", category="success")
-
-    return render_template("index.html", title="MC", form=form)
+    # 取得所有post, 依時間排序
+    posts = Post.query.order_by(Post.timestramp.desc()).all()
+    return render_template("index.html", title="MC", form=form, posts=posts)
 
 @app.route("/register", methods=["GET","POST"])
 def register():

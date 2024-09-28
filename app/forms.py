@@ -15,7 +15,7 @@ from wtforms.validators import (
 )
 
 # 協助validate_username() 引入User
-from models import User
+from app.models import User
 
 class RegisterForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=8, max=20)])

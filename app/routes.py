@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
-from forms import RegisterForm, LoginForm, PasswordResetRequestForm, ResetPasswordForm, PostTweetForm
-from models import User, Post
+from app.forms import RegisterForm, LoginForm, PasswordResetRequestForm, ResetPasswordForm, PostTweetForm
+from app.models import User, Post
 from flask_login import login_user, login_required, current_user, logout_user
 from app import app, bcrypt, db
 from app.email import send_reset_password_mail
@@ -15,9 +15,21 @@ def index():
         current_user.posts.append(post)
         db.session.commit()
         flash("You have post a new tweet.", category="success")
+    
+    n_followers = len(current_user.followers)
+    n_followered = len(current_user.followed)
+
+    # default(初始頁碼): 1
+    page = request.args.get('page', 1, type=int)
     # 取得所有post, 依時間排序
-    posts = Post.query.order_by(Post.timestramp.desc()).all()
-    return render_template("index.html", title="MC", form=form, posts=posts)
+    # posts = Post.query.order_by(Post.timestramp.desc()).all() #顯示所有在同一頁
+        # paginate(page, 
+        #   per_page: 每頁item數, 
+        #   error_out: 超出預設值報錯
+        #   ), 且返回型態更改為object
+    posts = Post.query.order_by(Post.timestramp.desc()).paginate(page=page, per_page=2, error_out=False)
+
+    return render_template("index.html", title="MC", form=form, posts=posts, n_followers=n_followers, n_followered=n_followered, page=page)
 
 @app.route("/register", methods=["GET","POST"])
 def register():
@@ -64,10 +76,10 @@ def login():
             # user exists and password matched
             login_user(user, remember=remember)
 
-            # 若url中存在變數"next"
-            # if request.args.get("next"):
-            #     next_page = request.args.get("next")
-            #     return redirect(url_for(next_page))
+            # 若url中存在變數"next", 重新導向next
+            if request.args.get("next"):
+                next_page = request.args.get("next")
+                return redirect(next_page)
             return redirect(url_for("hello", username = user.username))
 
         flash("User not exists or password not match", category="danger")

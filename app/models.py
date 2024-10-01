@@ -63,18 +63,18 @@ class User(db.Model, UserMixin):
         except:
             return
     def follow(self, user):
-        if not self.is_following(self, user):
+        if not self.is_following(user):
             self.followed.append(user)
 
     def unfollow(self, user):
-        if self.is_following(self, user):
+        if self.is_following(user):
             self.followed.remove(user)
 
     # 若已追蹤返回True
     def is_following(self, user):
         # 篩選followed(追蹤者)中 符合user.id
             # 計算符合條件個數, 若>0表示已經追蹤
-        return len(self.followed.filter(followers.c.followed_id == user.id)) > 0
+        return self.followed.count(user) > 0
 
 from datetime import datetime
 class Post(db.Model):

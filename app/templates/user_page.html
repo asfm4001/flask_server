@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Hey, {{ user.username }}</h1>
+{% if current_user == user %}
+  <a href="#">Edit Profile</a>
+{% else %}
+  {% if current_user.is_following(user) %}
+    <a href="{{ url_for('unfollow', username=user.username) }}">Unfollow</a>
+  {% else %}
+    <a href="{{ url_for('follow', username=user.username) }}">Follow</a>
+  {% endif %}
+{% endif %}
+<hr>
+<div class="row">
+  <div class="col-md-6">
+    <!-- all posts -->
+    {% include "post_context.html" %}
+    <!-- paggination -->
+    <nav aria-label="Page navigation" style="text-align: center;">
+        <ul class="pagination">
+            <li class="{% if not posts.has_prev %}disabled{% endif %}">
+            <a href="{{ url_for('user_page', username=user.username, page=posts.prev_num) }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo; Prev</span>
+            </a>
+            </li>
+            {% for i in posts.iter_pages(right_current=2) %}
+            {% if i %}
+                <li class="{% if i==posts.page %}active{% endif %}"><a href="{{ url_for('user_page', username=user.username, page=i) }}">{{ i }}</a></li>
+            {% else %}
+                <li><a href="#">...</a></li>
+            {% endif %}
+            {% endfor %}
+            <li class="{% if not posts.has_next %}disabled{% endif %}">
+            <a href="{{ url_for('user_page', username=user.username, page=posts.next_num) }}" aria-label="Next">
+                <span aria-hidden="true">&raquo; Next</span>
+            </a>
+            </li>
+        </ul>
+    </nav>
+  </div>
+</div>
+{% endblock %}

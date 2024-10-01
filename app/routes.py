@@ -29,7 +29,7 @@ def index():
         #   ), 且返回型態更改為object
     posts = Post.query.order_by(Post.timestramp.desc()).paginate(page=page, per_page=2, error_out=False)
 
-    return render_template("index.html", title="MC", form=form, posts=posts, n_followers=n_followers, n_followered=n_followered, page=page)
+    return render_template("index.html", title="MC", form=form, posts=posts, n_followers=n_followers, n_followered=n_followered, page=page, current_url="index")
 
 @app.route("/register", methods=["GET","POST"])
 def register():
@@ -131,3 +131,41 @@ def reset_password(token):
             flash("The user is not exist", category="info")
             return redirect(url_for("login"))
     return render_template("reset_password.html", form=form)
+
+@app.route("/user_page/<username>", methods=["GET", "POST"])
+def user_page(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            page = request.args.get('page', 1, type=int)
+            posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestramp.desc()).paginate(page=page, per_page=2, error_out=False)
+            # filter_by(Post.user_id = User.id)
+            # current_page = "user_page/" + user.username
+            return render_template("user_page.html", user=user, posts=posts, page=page)
+        else:
+            "404"
+
+@app.route("/follow/<username>", methods=["GET", "POST"])
+@login_required
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        current_user.follow(user)
+        db.session.commit()
+        page = request.args.get('page', 1, type=int)
+        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestramp.desc()).paginate(page=page, per_page=2, error_out=False)
+        return render_template("user_page.html", user=user, posts=posts)
+    else:
+        "404"
+
+@app.route("/unfollow/<username>", methods=["GET", "POST"])
+@login_required
+def unfollow(username):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        current_user.unfollow(user)
+        db.session.commit()
+        page = request.args.get('page', 1, type=int)
+        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestramp.desc()).paginate(page=page, per_page=2, error_out=False)
+        return render_template("user_page.html", user=user, posts=posts)
+    else:
+        "404"

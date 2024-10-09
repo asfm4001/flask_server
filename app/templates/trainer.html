@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>This is trainer page.</h1>
+{% if trainer %}
+    trainer name: {{ trainer['trainerName']}}
+{% endif%}
+{% endblock %}

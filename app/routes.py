@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import RegisterForm, LoginForm, PasswordResetRequestForm, ResetPasswordForm, PostTweetForm
 from app.models import User, Post
 from flask_login import login_user, login_required, current_user, logout_user
@@ -48,19 +48,13 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # 使用flash 返回結果至register.html
-        # flash後馬上轉到"login"，導致看不到!!!
         flash("Congrats, registration success!", category="success")
-        
-        # 返回index
-        # 不可使用time.sleep
-        # return redirect(url_for("index"))
         return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
 @app.route("/login", methods=["GET","POST"])
 def login():
-#     # 判斷當前client是否為登入狀態
+    # 判斷當前client是否為登入狀態
     if current_user.is_authenticated:
         return redirect(url_for("hello"))
     
@@ -169,3 +163,31 @@ def unfollow(username):
         return render_template("user_page.html", user=user, posts=posts)
     else:
         "404"
+
+@app.route("/api/pokemon/v1", methods=["GET", "POST"])
+def get_pokemon_api():
+    if request.method == "GET":
+        trainer = {
+            "trainerName": "MU",
+            "sex": "male",
+            "pokemons": [
+                {"pokemonID": 52, "pokemonName": "Meowth", "type": "Normal"},
+                {"pokemonID": 25, "pokemonName": "Pikachu", "type": "Electric"}
+            ]
+        }
+        return trainer
+    if request.method == "POST":
+        data = request.get_json()
+        if data:
+            dateType = type(data)
+            trainerName =  data["trainerName"]
+            pokemonsNum = len(data["pokemons"])
+            pokemonsName = []
+            for pokemon in data["pokemons"]:
+                pokemonsName.append(pokemon["pokemonName"])
+            print(dateType)
+            print(trainerName)
+            print(pokemonsNum)
+            print(pokemonsName)
+            return "ok", 200
+        return "Data input Error", 500
